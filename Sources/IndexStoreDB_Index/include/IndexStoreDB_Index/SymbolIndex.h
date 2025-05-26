@@ -90,8 +90,10 @@ public:
   bool foreachCanonicalSymbolOccurrenceByKind(SymbolKind symKind, bool workspaceOnly,
                                               function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
 
-  bool foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
-      function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
+  bool foreachUnitTestSymbolReferencedByOutputPaths(
+      ArrayRef<CanonicalFilePath> filePaths,
+      function_ref<bool(SymbolOccurrenceRef Occur)> receiver
+  );
 
   /// Calls `receiver` for every unit test symbol in unit files that reference
   /// one of the main files in `mainFilePaths`.

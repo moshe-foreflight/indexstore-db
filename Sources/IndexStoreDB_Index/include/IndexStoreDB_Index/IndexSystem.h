@@ -166,8 +166,10 @@ public:
 
   /// Returns unit test class/method occurrences that are referenced from units associated with the provided output file paths.
   /// \returns `false` if the receiver returned `false` to stop receiving symbols, `true` otherwise.
-  bool foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
-      function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
+  bool foreachUnitTestSymbolReferencedByOutputPaths(
+       ArrayRef<StringRef> filePaths,
+       function_ref<bool(SymbolOccurrenceRef Occur)> Receiver
+  );
 
 
   /// Calls `receiver` for every unit test symbol in unit files that reference

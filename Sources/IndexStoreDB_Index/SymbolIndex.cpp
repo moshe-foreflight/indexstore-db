@@ -86,7 +86,7 @@ public:
   size_t countOfCanonicalSymbolsWithKind(SymbolKind symKind, bool workspaceOnly);
   bool foreachCanonicalSymbolOccurrenceByKind(SymbolKind symKind, bool workspaceOnly,
                                               function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
-  bool foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
+  bool foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePath> FilePaths,
       function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
 
   /// Calls `receiver` for every unit test symbol in unit files that reference
@@ -575,7 +575,7 @@ SymbolIndexImpl::findCanonicalProvidersForUSR(IDCode usrCode) {
   return foundProvs;
 }
 
-bool SymbolIndexImpl::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> outFilePaths, function_ref<bool(SymbolOccurrenceRef Occur)> receiver) {
+bool SymbolIndexImpl::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePath> outFilePaths, function_ref<bool(SymbolOccurrenceRef Occur)> receiver) {
   std::vector<SymbolDataProviderRef> providers;
   {
     ReadTransaction reader(DBase);
@@ -747,7 +747,7 @@ bool SymbolIndex::foreachSymbolOccurrenceInFilePath(CanonicalFilePathRef filePat
   return IMPL->foreachSymbolOccurrenceInFilePath(filePath, std::move(Receiver));
 }
 
-bool SymbolIndex::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
+bool SymbolIndex::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePath> FilePaths,
     function_ref<bool(SymbolOccurrenceRef Occur)> Receiver) {
   return IMPL->foreachUnitTestSymbolReferencedByOutputPaths(FilePaths, std::move(Receiver));
 }

@@ -682,6 +682,23 @@ indexstoredb_index_unit_tests_referenced_by_main_files(
 }
 
 bool
+indexstoredb_index_unit_tests_referenced_by_files(
+  _Nonnull indexstoredb_index_t index,
+   const char *_Nonnull const *_Nonnull cFilePaths,
+   size_t count,
+  _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
+) {
+  auto obj = (Object<std::shared_ptr<IndexSystem>> *)index;
+  SmallVector<StringRef, 2> filePaths;
+  for (size_t i = 0; i < count; ++i) {
+    filePaths.push_back(cFilePaths[i]);
+  }
+  return obj->value->foreachUnitTestSymbolReferencedByMainFiles(filePaths, [&](SymbolOccurrenceRef occur) -> bool {
+    return receiver((indexstoredb_symbol_occurrence_t)occur.get());
+  });
+}
+
+bool
 indexstoredb_index_unit_tests(
   _Nonnull indexstoredb_index_t index,
   _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver

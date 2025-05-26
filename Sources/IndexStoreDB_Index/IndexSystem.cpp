@@ -225,8 +225,10 @@ public:
   bool foreachIncludeOfUnit(StringRef unitName,
                             function_ref<bool(CanonicalFilePathRef sourcePath, CanonicalFilePathRef targetPath, unsigned line)> receiver);
 
-  bool foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
-      function_ref<bool(SymbolOccurrenceRef Occur)> Receiver);
+  bool foreachUnitTestSymbolReferencedByOutputPaths(
+      ArrayRef<StringRef> filePaths,
+      function_ref<bool(SymbolOccurrenceRef Occur)> receiver
+  );
 
   /// Calls `receiver` for every unit test symbol in unit files that reference
   /// one of the main files in `mainFilePaths`.
@@ -635,8 +637,14 @@ bool IndexSystemImpl::foreachIncludeOfUnit(StringRef unitName,
   return PathIndex->foreachIncludeOfUnit(unitName, receiver);
 }
 
-bool IndexSystemImpl::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths, function_ref<bool(SymbolOccurrenceRef Occur)> Receiver) {
-  return SymIndex->foreachUnitTestSymbolReferencedByOutputPaths(FilePaths, std::move(Receiver));
+bool IndexSystemImpl::foreachUnitTestSymbolReferencedByOutputPaths(
+    ArrayRef<StringRef> filePaths,
+    function_ref<bool(SymbolOccurrenceRef Occur)> Receiver) {
+    std::vector<CanonicalFilePath> canonicalFilePaths;
+    for (StringRef filePath : filePaths) {
+      canonicalFilePaths.push_back(PathIndex->getCanonicalPath(filePath));
+    }
+  return SymIndex->foreachUnitTestSymbolReferencedByOutputPaths(canonicalFilePaths, std::move(Receiver));
 }
 
 bool IndexSystemImpl::foreachUnitTestSymbolReferencedByMainFiles(
@@ -853,7 +861,7 @@ bool IndexSystem::foreachIncludeOfUnit(StringRef unitName,
   return IMPL->foreachIncludeOfUnit(unitName, receiver);
 }
 
-bool IndexSystem::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<CanonicalFilePathRef> FilePaths,
+bool IndexSystem::foreachUnitTestSymbolReferencedByOutputPaths(ArrayRef<StringRef> FilePaths,
     function_ref<bool(SymbolOccurrenceRef Occur)> Receiver) {
   return IMPL->foreachUnitTestSymbolReferencedByOutputPaths(FilePaths, std::move(Receiver));
 }
