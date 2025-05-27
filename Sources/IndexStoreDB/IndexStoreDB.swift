@@ -472,6 +472,16 @@ public final class IndexStoreDB {
     }
     return result
   }
+    
+    /// Returns all unit test symbols that contain the specified USR.
+    public func unitTestsCoveringSymbol(byUSR usr: String) -> [SymbolOccurrence] {
+        var result: [SymbolOccurrence] = []
+        indexstoredb_index_unit_tests_containing_symbol_by_usr(impl, usr) { occurrence in
+            result.append(SymbolOccurrence(occurrence))
+          return true
+        }
+        return result
+    }
 
   /// Returns all unit test symbols in the index.
   public func unitTests() -> [SymbolOccurrence] {

@@ -20,6 +20,7 @@
 #include <IndexStoreDB_Index/IndexStoreCXX.h>
 #include <IndexStoreDB_LLVMSupport/llvm_ADT_IntrusiveRefCntPtr.h>
 #include <Block.h>
+#include <set>
 
 using namespace IndexStoreDB;
 using namespace index;
@@ -679,6 +680,68 @@ indexstoredb_index_unit_tests_referenced_by_main_files(
   return obj->value->foreachUnitTestSymbolReferencedByMainFiles(mainFilePaths, [&](SymbolOccurrenceRef occur) -> bool {
     return receiver((indexstoredb_symbol_occurrence_t)occur.get());
   });
+}
+
+bool
+indexstoredb_index_unit_tests_containing_symbol_by_usr(
+   _Nonnull indexstoredb_index_t index,
+   const char *_Nonnull usr,
+   _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
+) {
+  auto obj = (Object<std::shared_ptr<IndexSystem>> *)index;
+    // gather canonicals
+    std::vector<SymbolOccurrenceRef> occurrencesOfCanonicals;
+    std::vector<SymbolOccurrenceRef> relatedCalls;
+    std::set<std::string> seenUSRs;
+    std::vector<SymbolRef> testSymbols;
+    std::vector<SymbolRelation> rels;
+    std::shared_ptr<IndexSystem> indexSystem = obj->value;
+    
+    /// Get occurrences for USR. We only need one occurrence per USR, since we
+    /// will find all calls for a given USR.
+    
+    auto canonical = indexSystem->foreachSymbolOccurrenceByUSR(usr, SymbolRole::Canonical, [&](SymbolOccurrenceRef occur) -> bool {
+        auto occurUSR = occur->getSymbol()->getUSR();
+        if (seenUSRs.find(occurUSR) != seenUSRs.end()) {
+            return true;
+        }
+        seenUSRs.insert(occurUSR);
+        if (occurUSR.compare(usr)) {
+            return true;
+        }
+        occurrencesOfCanonicals.push_back(occur);
+        
+        return true;
+    });
+    
+    // find calls
+    for (auto &occur : occurrencesOfCanonicals) {
+      auto foundCalls = indexSystem->foreachSymbolCallOccurrence(occur, [&](SymbolOccurrenceRef occur) -> bool {
+          relatedCalls.push_back(occur);
+          return true;
+      });
+    }
+    
+    // Find related tests
+    for (auto &relatedCall : relatedCalls) {
+        relatedCall->foreachRelatedUnitTest([&](SymbolRef testSymbol) {
+            testSymbols.push_back(testSymbol);
+        });
+    }
+    
+    seenUSRs.clear();
+    for (auto &testSymbol : testSymbols) {
+        indexSystem->foreachSymbolOccurrenceByUSR(testSymbol->getUSR(), (SymbolRole::Canonical), [&](SymbolOccurrenceRef occur) {
+            auto occurUSR = occur->getSymbol()->getUSR();
+            if (seenUSRs.find(occurUSR) != seenUSRs.end()) {
+                return true;
+            }
+            seenUSRs.insert(occurUSR);
+            receiver(occur.get());
+            return true;
+        });
+    }
+    return true;
 }
 
 bool

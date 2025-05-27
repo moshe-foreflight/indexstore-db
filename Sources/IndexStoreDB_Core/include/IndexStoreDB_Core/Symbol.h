@@ -298,6 +298,8 @@ public:
 
   void foreachRelatedSymbol(SymbolRoleSet Roles,
                             function_ref<void(SymbolRef)> Receiver);
+  
+  void foreachRelatedUnitTest(function_ref<void(SymbolRef)> Receiver);
 
   void print(raw_ostream &OS) const;
 };

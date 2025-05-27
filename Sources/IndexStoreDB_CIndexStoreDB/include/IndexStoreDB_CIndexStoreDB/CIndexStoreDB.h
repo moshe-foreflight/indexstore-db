@@ -586,6 +586,20 @@ indexstoredb_index_unit_tests_referenced_by_main_files(
   _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
 );
 
+/// Calls `receiver` for every unit test symbol that references the supplied USR.
+///
+/// \param index An IndexStoreDB object which contains the symbols.
+/// \param usr An identifier
+/// \param receiver A function to be called for each occurrence. 
+/// returns `false`, iteration is stopped and the function returns `true`.
+/// \returns `false` if the receiver returned `false` to stop receiving symbols, `true` otherwise.
+INDEXSTOREDB_PUBLIC bool
+indexstoredb_index_unit_tests_containing_symbol_by_usr(
+  _Nonnull indexstoredb_index_t index,
+   const char *_Nonnull usr,
+  _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
+);
+
 /// Calls `receiver` for every unit test symbol in the index.
 ///
 /// \param index An IndexStoreDB object which contains the symbols.
@@ -595,6 +609,20 @@ indexstoredb_index_unit_tests_referenced_by_main_files(
 INDEXSTOREDB_PUBLIC bool
 indexstoredb_index_unit_tests(
   _Nonnull indexstoredb_index_t index,
+  _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
+);
+
+/// Calls `receiver` for every unit test symbol in the index.
+///
+/// \param index An IndexStoreDB object which contains the symbols.
+/// \param receiver A function to be called for each unit tests. If the receiver
+/// \param usr A `usr`
+/// returns `false`, iteration is stopped and the function returns `true`.
+/// \returns `false` if the receiver returned `false` to stop receiving symbols, `true` otherwise.
+INDEXSTOREDB_PUBLIC bool
+indexstoredb_index_unit_tests_calling_usr(
+  _Nonnull indexstoredb_index_t index,
+  const char *_Nonnull usr,
   _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver
 );
 

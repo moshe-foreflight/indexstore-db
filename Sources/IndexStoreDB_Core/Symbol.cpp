@@ -103,6 +103,15 @@ void SymbolOccurrence::foreachRelatedSymbol(SymbolRoleSet Roles,
   }
 }
 
+void SymbolOccurrence::foreachRelatedUnitTest(function_ref<void(SymbolRef)> Receiver) {
+    for (auto &Rel : getRelations()) {
+        SymbolRef SymRef = Rel.getSymbol();
+        if (SymRef->getSymbolProperties().contains(SymbolProperty::UnitTest)) {
+            Receiver(SymRef);
+        }
+    }
+}
+
 void SymbolOccurrence::print(raw_ostream &OS) const {
   getLocation().print(OS);
   OS << " | ";
