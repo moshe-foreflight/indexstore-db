@@ -102,6 +102,8 @@ final class IndexTests: XCTestCase {
           .init(symbol: asym, roles: [.calledBy, .containedBy])
       ])
     ])
+    
+      checkOccurrences(index.canonicalOccurrences(byUSR: usr), expected: [ccanon])
   }
 
   func testMixedLangTarget() throws {

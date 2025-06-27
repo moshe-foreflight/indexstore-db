@@ -400,6 +400,19 @@ indexstoredb_index_canonical_symbol_occurences_by_name(
   });
 }
 
+
+bool
+indexstoredb_index_canonical_symbol_occurrences_by_usr(
+  indexstoredb_index_t index,
+  const char *_Nonnull usr,
+  indexstoredb_symbol_occurrence_receiver_t receiver)
+{
+  auto obj = (Object<std::shared_ptr<IndexSystem>> *)index;
+    return obj->value->foreachCanonicalSymbolOccurrenceByUSR(usr, [&](SymbolOccurrenceRef occur) -> bool {
+        return receiver((indexstoredb_symbol_occurrence_t)occur.get());
+    });
+}
+
 bool
 indexstoredb_index_canonical_symbol_occurences_containing_pattern(
   indexstoredb_index_t index,

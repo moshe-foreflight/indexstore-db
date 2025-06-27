@@ -236,6 +236,24 @@ public final class IndexStoreDB {
     }
     return result
   }
+   
+  @discardableResult
+  public func forEachCanonicalOccurrence(byUSR usr: String, body: (SymbolOccurrence) -> Bool) -> Bool {
+    return withoutActuallyEscaping(body) { body in
+      return indexstoredb_index_canonical_symbol_occurrences_by_usr(impl, usr) { occur in
+        body(SymbolOccurrence(occur))
+      }
+    }
+  }
+    
+  public func canonicalOccurrences(byUSR usr: String) -> [SymbolOccurrence] {
+    var result: [SymbolOccurrence] = []
+      forEachCanonicalOccurrence(byUSR: usr) { occur in
+        result.append(occur)
+        return true
+      }
+    return result
+  }
 
   @discardableResult public func forEachCanonicalSymbolOccurrence(
     containing pattern: String,
