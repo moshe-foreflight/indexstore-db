@@ -254,7 +254,25 @@ public final class IndexStoreDB {
       }
     return result
   }
-
+  
+    @discardableResult
+    public func forEachSymbolCallOccurrence(byUSR usr: String, body: (SymbolOccurrence) -> Bool) -> Bool {
+      return withoutActuallyEscaping(body) { body in
+          return indexstoredb_index_call_occurrences_by_usr(impl, usr) { occur in
+            return body(SymbolOccurrence(occur))
+        }
+      }
+    }
+    
+  public func symbolCallOccurrences(byUSR usr: String) -> [SymbolOccurrence] {
+    var result: [SymbolOccurrence] = []
+        forEachSymbolCallOccurrence(byUSR: usr) { occur in
+        result.append(occur)
+        return true
+      }
+    return result
+  }
+    
   @discardableResult public func forEachCanonicalSymbolOccurrence(
     containing pattern: String,
     anchorStart: Bool,

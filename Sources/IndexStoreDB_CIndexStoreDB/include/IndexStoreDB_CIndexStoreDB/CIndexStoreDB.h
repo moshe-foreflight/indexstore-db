@@ -344,6 +344,13 @@ indexstoredb_index_canonical_symbol_occurrences_by_usr(
     const char *_Nonnull usr,
     _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver);
 
+
+INDEXSTOREDB_PUBLIC bool
+indexstoredb_index_call_occurrences_by_usr(
+    _Nonnull indexstoredb_index_t index,
+    const char *_Nonnull usr,
+    _Nonnull indexstoredb_symbol_occurrence_receiver_t receiver);
+
 /// Iterates over all the symbols contained in \p path
 ///
 /// The symbol passed to the receiver is only valid for the duration of the
